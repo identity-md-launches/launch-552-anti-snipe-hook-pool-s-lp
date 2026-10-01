@@ -1,0 +1,21 @@
+{
+  "kind": "univ4_hook",
+  "hook": {
+    "contract": "AntiSnipeHook",
+    "constructorArgs": ["$poolManager"],
+    "permissions": ["afterInitialize", "beforeSwap"]
+  },
+  "token": {
+    "contract": "AntiSnipeToken",
+    "name": "AntiSnipe",
+    "symbol": "SNIPE",
+    "decimals": 18
+  },
+  "pool": {
+    "pairedCurrency": "0x0000000000000000000000000000000000000000",
+    "fee": 3000,
+    "tickSpacing": 60,
+    "initialPrice": "79228162514264337593543950336"
+  },
+  "notes": "BLOCKED: The supplied manifest schema limits pool.fee to 1000000, but AntiSnipeHook accepts only PoolKey.fee = 8388608 (0x800000, DYNAMIC_FEE_FLAG). No schema-allowed fee can initialize this hook's pool. The value 3000 here records the steady-state LP rate as a schema-compatible placeholder; using it directly as PoolKey.fee reverts with DynamicFeeRequired. This manifest is not deployable. The schema and downstream pool-key handling must explicitly support the dynamic fee flag before a deployable manifest can be produced. These notes do not override pool.fee or configure the deployer. AntiSnipeHook takes one IPoolManager constructor argument, resolved from $poolManager. Only afterInitialize and beforeSwap are enabled (address permission mask 4224 / 0x1080); BaseHook restricts callbacks to the immutable PoolManager. afterInitialize records a separate block.timestamp + 3600 deadline once per PoolId and rejects repeat initialization. beforeSwap returns zero delta and an LP fee override: 10000 units (1%) before the deadline, 3000 units (0.3%) at and after it, with OVERRIDE_FEE_FLAG (0x400000). It performs no storage writes, token transfers or stored LP fee updates. The hook has no owner, administrative setters or upgrade path. AntiSnipeToken has no constructor arguments. The intended pair is native ETH as currency0 and SNIPE as currency1. Tick spacing 60 and initial sqrtPriceX96 = 2^96 use the repository's test fixture values as explicit assumptions: equal raw-unit amounts, or 1 SNIPE per ETH with 18 decimals. Supply, allocation and deployment policy are specified separately."
+}
